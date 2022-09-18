@@ -7,6 +7,10 @@ class Address(models.Model):
     name = models.CharField(max_length=255)
     latitude = models.DecimalField(max_digits=9, decimal_places=6)
     longtitude = models.DecimalField(max_digits=9, decimal_places=6)
+    house = models.OneToOneField('House', on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class Promotion(models.Model):
@@ -21,5 +25,7 @@ class House(models.Model):
     bathrooms = models.PositiveSmallIntegerField()
     bedrooms = models.PositiveSmallIntegerField()
     date_created = models.DateTimeField(auto_now_add=True)
-    address = models.OneToOneField(Address, on_delete=models.CASCADE)
     promotions = models.ManyToManyField(Promotion, blank=True)
+
+    def __str__(self) -> str:
+        return self.name
