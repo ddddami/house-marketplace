@@ -13,11 +13,6 @@ class Address(models.Model):
         return self.name
 
 
-class Promotion(models.Model):
-    description = models.CharField(max_length=255)
-    discount = models.FloatField()
-
-
 class House(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
@@ -25,7 +20,6 @@ class House(models.Model):
     bathrooms = models.PositiveSmallIntegerField()
     bedrooms = models.PositiveSmallIntegerField()
     date_created = models.DateTimeField(auto_now_add=True)
-    promotions = models.ManyToManyField(Promotion, blank=True)
 
     def __str__(self) -> str:
         return self.name
