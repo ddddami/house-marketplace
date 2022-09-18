@@ -39,6 +39,7 @@ class House(models.Model):
     price = models.DecimalField(max_digits=6, decimal_places=2)
     bathrooms = models.PositiveSmallIntegerField()
     bedrooms = models.PositiveSmallIntegerField()
+    parking = models.BooleanField(default=False)
     date_created = models.DateTimeField(auto_now_add=True)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, null=True)
 
