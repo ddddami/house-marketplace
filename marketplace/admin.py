@@ -1,10 +1,23 @@
 from django.contrib import admin
 from django.utils.html import format_html, urlencode
 from django.urls import reverse
-from .models import Address, House
+from .models import Address, Customer, House
 # Register your models here.
 
 admin.site.register(Address)
+
+
+@admin.register(Customer)
+class CustomerAdmin(admin.ModelAdmin):
+
+    list_display = ('id', 'first_name', 'last_name', 'is_agent')
+    list_select_related = ['user']
+
+    @admin.display(ordering='is_verified')
+    def is_agent(self, customer):
+        if customer.is_verified:
+            return 'Yes'
+        return 'No'
 
 
 class AdressInline(admin.TabularInline):
@@ -29,4 +42,4 @@ class HouseAdmin(admin.ModelAdmin):
             + urlencode({
                 'house__id': str(house.id)
             }))
-        return format_html('<a href="{}">{}</a>', url, house.address.name)
+        return format_html('<a href="{}">{} Adresses</a>', url, house.address.name)

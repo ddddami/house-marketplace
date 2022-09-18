@@ -1,5 +1,6 @@
 from django.db import models
-
+from django.contrib import admin
+from django.conf import settings
 # Create your models here.
 
 
@@ -13,6 +14,25 @@ class Address(models.Model):
         return self.name
 
 
+class Customer(models.Model):
+    is_verified = models.BooleanField(default=False)
+    phone = models.CharField(max_length=255)
+    birth_date = models.DateField(null=True, blank=True)
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.user.first_name} {self.user.last_name}'
+
+    @admin.display(ordering='user__first_name')
+    def first_name(self):
+        return self.user.first_name
+
+    @admin.display(ordering='user__last_name')
+    def last_name(self):
+        return self.user.last_name
+
+
 class House(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
@@ -20,6 +40,7 @@ class House(models.Model):
     bathrooms = models.PositiveSmallIntegerField()
     bedrooms = models.PositiveSmallIntegerField()
     date_created = models.DateTimeField(auto_now_add=True)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, null=True)
 
     def __str__(self) -> str:
         return self.name
