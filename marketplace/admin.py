@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html, urlencode
 from django.urls import reverse
-from .models import Address, Customer, House
+from .models import Address, Customer, House, HouseImage
 # Register your models here.
 
 admin.site.register(Address)
@@ -25,9 +25,14 @@ class AdressInline(admin.TabularInline):
     list_display = ('id')
 
 
+class HouseImageInline(admin.TabularInline):
+    model = HouseImage
+    list_display = ('id', 'image')
+
+
 @admin.register(House)
 class HouseAdmin(admin.ModelAdmin):
-    inlines = [AdressInline]
+    inlines = [AdressInline, HouseImageInline]
     list_display = ('id', 'name', 'description', 'price',
                     'bathrooms', 'bedrooms', 'house_address')
     list_editable = ['name', 'price', 'bathrooms', 'bedrooms']
