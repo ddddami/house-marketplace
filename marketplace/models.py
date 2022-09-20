@@ -45,3 +45,8 @@ class House(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+
+class HouseImage(models.Model):
+    house = models.ForeignKey(House, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='marketplace/images')
