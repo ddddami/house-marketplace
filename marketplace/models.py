@@ -48,5 +48,7 @@ class House(models.Model):
 
 
 class HouseImage(models.Model):
-    house = models.ForeignKey(House, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='marketplace/images')
+    house = models.ForeignKey(
+        House, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(
+        upload_to='marketplace/images')
