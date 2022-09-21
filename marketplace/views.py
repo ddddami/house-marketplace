@@ -1,11 +1,21 @@
 from django.shortcuts import render
 from rest_framework.viewsets import ModelViewSet
 
-from marketplace.models import House
-from marketplace.serializers import HouseSerializer
+from marketplace.models import House, HouseImage
+from marketplace.serializers import HouseImageSerializer, HouseSerializer
 # Create your views here.
 
 
 class HouseViewSet(ModelViewSet):
-    queryset = House.objects.all()
+    queryset = House.objects.prefetch_related('images').all()
     serializer_class = HouseSerializer
+
+
+class HouseImageViewSet(ModelViewSet):
+    serializer_class = HouseImageSerializer
+
+    def get_queryset(self):
+        return HouseImage.objects.filter(house_id=self.kwargs['house_pk'])
+
+    def get_serializer_context(self):
+        return {'house_id': self.kwargs['house_pk']}

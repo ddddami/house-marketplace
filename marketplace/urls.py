@@ -1,7 +1,11 @@
 from django.urls import path
-from rest_framework.routers import DefaultRouter
+from rest_framework_nested import routers
 from . import views
 
-router = DefaultRouter()
+router = routers.DefaultRouter()
 router.register('houses', views.HouseViewSet)
-urlpatterns = router.urls
+houses_router = routers.NestedDefaultRouter(
+    router, 'houses', lookup='house')
+houses_router.register('images', views.HouseImageViewSet,
+                       basename='house-images')
+urlpatterns = router.urls + houses_router.urls
