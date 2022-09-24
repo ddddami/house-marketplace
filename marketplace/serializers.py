@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Address, House, HouseImage
+from .models import Customer, House, HouseImage, Address
 
 
 class AddressSerializer(serializers.ModelSerializer):
@@ -31,3 +31,23 @@ class HouseSerializer(serializers.ModelSerializer):
         model = House
         fields = ['id', 'name', 'description', 'price',
                   'bathrooms', 'bedrooms', 'parking', 'date_created', 'address', 'images']
+
+
+class CustomerSerializer(serializers.ModelSerializer):
+    user_id = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Customer
+        fields = ['id', 'user_id', 'phone', 'birth_date']
+
+    def validate(self, value):
+        user_id = self.context['user_id']
+
+        if Customer.objects.filter(user_id=user_id).exists():
+            raise serializers.ValidationError(
+                'Customer with user already exists.')
+        return user_id
+
+    def create(self, validated_data):
+        user_id = self.context['user_id']
+        return Customer.objects.create(user_id=user_id, **validated_data)

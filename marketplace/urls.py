@@ -4,6 +4,7 @@ from . import views
 
 router = routers.DefaultRouter()
 router.register('houses', views.HouseViewSet)
+router.register('customers', views.CustomerViewSet)
 houses_router = routers.NestedDefaultRouter(
     router, 'houses', lookup='house')
 houses_router.register('images', views.HouseImageViewSet,
