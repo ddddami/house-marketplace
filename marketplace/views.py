@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from rest_framework.viewsets import ModelViewSet
 
-from marketplace.models import House, HouseImage
-from marketplace.serializers import HouseImageSerializer, HouseSerializer
+from marketplace.models import Address, House, HouseImage
+from marketplace.serializers import AddressSerializer, HouseImageSerializer, HouseSerializer
 # Create your views here.
 
 

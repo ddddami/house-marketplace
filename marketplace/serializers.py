@@ -1,5 +1,16 @@
 from rest_framework import serializers
-from .models import House, HouseImage
+from .models import Address, House, HouseImage
+
+
+class AddressSerializer(serializers.ModelSerializer):
+    longitude = serializers.SerializerMethodField()
+
+    def get_longitude(self, address):
+        return address.longtitude
+
+    class Meta:
+        model = Address
+        fields = ['id', 'name', 'latitude', 'longitude']
 
 
 class HouseImageSerializer(serializers.ModelSerializer):
@@ -14,8 +25,9 @@ class HouseImageSerializer(serializers.ModelSerializer):
 
 class HouseSerializer(serializers.ModelSerializer):
     images = HouseImageSerializer(many=True, read_only=True)
+    address = AddressSerializer()
 
     class Meta:
         model = House
         fields = ['id', 'name', 'description', 'price',
-                  'bathrooms', 'bedrooms', 'parking', 'date_created', 'images']
+                  'bathrooms', 'bedrooms', 'parking', 'date_created', 'address', 'images']
