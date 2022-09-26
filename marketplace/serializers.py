@@ -3,10 +3,6 @@ from .models import Customer, House, HouseImage, Address
 
 
 class AddressSerializer(serializers.ModelSerializer):
-    longitude = serializers.SerializerMethodField()
-
-    def get_longitude(self, address):
-        return address.longtitude
 
     class Meta:
         model = Address

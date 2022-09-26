@@ -7,7 +7,7 @@ from django.conf import settings
 class Address(models.Model):
     name = models.CharField(max_length=255)
     latitude = models.DecimalField(max_digits=9, decimal_places=6)
-    longtitude = models.DecimalField(max_digits=9, decimal_places=6)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6)
     house = models.OneToOneField('House', on_delete=models.CASCADE)
 
     def __str__(self) -> str:
