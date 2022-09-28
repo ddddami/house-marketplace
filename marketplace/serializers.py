@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from core.models import User
 from .models import Customer, House, HouseImage, Address
 
 
@@ -13,6 +14,18 @@ class HouseImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = HouseImage
         fields = ['id', 'image']
+
+    def validate(self, attrs):
+        house_id = self.context['house_id']
+        user_id = self.context['user_id']
+        customer_id = Customer.objects.get(
+            user_id=user_id).id
+        if not House.objects.filter(
+                id=house_id, customer_id=customer_id).exists():
+
+            raise serializers.ValidationError(
+                'House was not posted by given user.')
+        return attrs
 
     def create(self, validated_data):
         house_id = self.context['house_id']

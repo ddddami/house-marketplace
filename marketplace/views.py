@@ -28,7 +28,7 @@ class HouseImageViewSet(ModelViewSet):
         return HouseImage.objects.filter(house_id=self.kwargs['house_pk'])
 
     def get_serializer_context(self):
-        return {'house_id': self.kwargs['house_pk']}
+        return {'house_id': self.kwargs['house_pk'], 'user_id': self.request.user.id}
 
 
 class CustomerViewSet(ModelViewSet):
