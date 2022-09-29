@@ -3,6 +3,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.decorators import action
+from rest_framework import permissions
 from django_filters.rest_framework import DjangoFilterBackend
 from marketplace.models import Customer, House, HouseImage, Address
 from marketplace.serializers import CustomerSerializer, AddressSerializer, HouseImageSerializer, HouseSerializer
@@ -11,7 +12,6 @@ from .filters import HouseFilter
 
 
 class HouseViewSet(ModelViewSet):
-    queryset = House.objects.prefetch_related('images').all()
     serializer_class = HouseSerializer
     filter_backends = [DjangoFilterBackend,
                        SearchFilter, OrderingFilter]
@@ -19,6 +19,12 @@ class HouseViewSet(ModelViewSet):
     filterset_fields = ['bedrooms', 'bathrooms']
     search_fields = ['name', 'description', 'address__name']
     ordering_fields = ['id', 'date_created', 'price']
+
+    def get_queryset(self):
+        user = self.request.user
+        if self.request.method in permissions.SAFE_METHODS or user.is_staff:
+            return House.objects.prefetch_related('images').all()
+        return House.objects.prefetch_related('images').filter(customer_id=Customer.objects.only('id').get(user_id=user))
 
 
 class HouseImageViewSet(ModelViewSet):

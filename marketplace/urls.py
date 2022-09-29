@@ -3,7 +3,7 @@ from rest_framework_nested import routers
 from . import views
 
 router = routers.DefaultRouter()
-router.register('houses', views.HouseViewSet)
+router.register('houses', views.HouseViewSet, basename='house')
 router.register('customers', views.CustomerViewSet)
 houses_router = routers.NestedDefaultRouter(
     router, 'houses', lookup='house')
