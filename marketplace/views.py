@@ -69,6 +69,7 @@ class CustomerViewSet(ModelViewSet):
 
 class ReviewViewSet(ModelViewSet):
     serializer_class = ReviewSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
         return Review.objects.select_related('customer').filter(house_id=self.kwargs['house_pk'])
