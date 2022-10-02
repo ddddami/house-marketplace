@@ -41,6 +41,32 @@ class HouseSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'description', 'price',
                   'bathrooms', 'bedrooms', 'parking', 'date_created', 'address', 'images']
 
+    def create(self, validated_data):
+        print(validated_data)
+        address_data = dict(validated_data.pop('address'))
+        address = Address(**address_data)
+        address.house_id = self.context['house_id']
+        house = House(**(validated_data))
+        house.customer_id = self.context['customer_id']
+        house.address = address
+        house.save()
+        address.save()
+        # address = Address(**(validated_data[7:]))
+        # address.save()
+        # return house
+        return house
+
+    def update(self, instance, validated_data):
+        address_data = dict(validated_data.pop('address'))
+        address = Address(**address_data)
+        address.house_id = self.context['house_id']
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.address = address
+
+        instance.save()
+        return instance
+
 
 class CustomerSerializer(serializers.ModelSerializer):
     user_id = serializers.IntegerField(read_only=True)

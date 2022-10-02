@@ -6,5 +6,6 @@ class HouseFilter(FilterSet):
     class Meta:
         model = House
         fields = {
-            'price': ['gt', 'lt']
+            'price': ['gt', 'lt'],
+            'customer_id': ['exact']
         }

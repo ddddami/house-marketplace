@@ -24,7 +24,10 @@ class HouseViewSet(ModelViewSet):
         user = self.request.user
         if self.request.method in permissions.SAFE_METHODS or user.is_staff:
             return House.objects.prefetch_related('images').all()
-        return House.objects.prefetch_related('images').filter(customer_id=Customer.objects.only('id').get(user_id=user))
+        return House.objects.prefetch_related('images').filter(customer_id=Customer.objects.only('id').get(user_id=user.id))
+
+    def get_serializer_context(self):
+        return {'house_id': self.kwargs.get('pk'), 'customer_id': Customer.objects.only('id').filter(user_id=self.request.user.id)}
 
 
 class HouseImageViewSet(ModelViewSet):
@@ -44,7 +47,7 @@ class CustomerViewSet(ModelViewSet):
     def get_serializer_context(self):
         return {'user_id': self.request.user.id}
 
-    @action(detail=False, methods=['get', 'put'])
+    @ action(detail=False, methods=['get', 'put'])
     def me(self, request):
         user_id = request.user.id
         customer = Customer.objects.get(
