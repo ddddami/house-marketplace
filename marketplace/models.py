@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.contrib import admin
 from django.conf import settings
@@ -61,3 +62,8 @@ class Review(models.Model):
     description = models.TextField()
     date = models.DateField(auto_now_add=True)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+
+
+class Cart(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True)
+    date_created = models.DateField(auto_now_add=True)

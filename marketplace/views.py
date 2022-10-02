@@ -1,13 +1,14 @@
 from django.shortcuts import render
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, GenericViewSet
+from rest_framework.mixins import CreateModelMixin, DestroyModelMixin, RetrieveModelMixin
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.decorators import action
 from rest_framework import permissions
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Customer, House, HouseImage, Address, Review
-from .serializers import CustomerSerializer, AddressSerializer, HouseImageSerializer, HouseSerializer, ReviewSerializer
+from .models import Cart, Customer, House, HouseImage, Address, Review
+from .serializers import CartSerializer, CustomerSerializer, AddressSerializer, HouseImageSerializer, HouseSerializer, ReviewSerializer
 from .filters import HouseFilter
 # Create your views here.
 
@@ -78,3 +79,8 @@ class ReviewViewSet(ModelViewSet):
         if self.request.user and self.request.user.is_authenticated:
             return {'house_id': self.kwargs['house_pk'], 'customer_id': Customer.objects.only('id').get(user_id=self.request.user.id).id}
         return {'house_id': self.kwargs['house_pk']}
+
+
+class CartViewSet(CreateModelMixin, RetrieveModelMixin, DestroyModelMixin, GenericViewSet):
+    queryset = Cart.objects.all()
+    serializer_class = CartSerializer

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from core.models import User
-from .models import Customer, House, HouseImage, Address, Review
+from .models import Cart, Customer, House, HouseImage, Address, Review
 
 
 class AddressSerializer(serializers.ModelSerializer):
@@ -98,3 +98,11 @@ class ReviewSerializer(serializers.ModelSerializer):
         review.customer_id = self.context['customer_id']
         review.save()
         return review
+
+
+class CartSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(read_only=True)
+
+    class Meta:
+        model = Cart
+        fields = ['id']
