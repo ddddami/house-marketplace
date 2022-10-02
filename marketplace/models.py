@@ -52,3 +52,12 @@ class HouseImage(models.Model):
         House, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(
         upload_to='marketplace/images')
+
+
+class Review(models.Model):
+    house = models.ForeignKey(
+        House, on_delete=models.CASCADE, related_name='reviews')
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    date = models.DateField(auto_now_add=True)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)

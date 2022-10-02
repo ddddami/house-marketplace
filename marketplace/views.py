@@ -6,8 +6,8 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.decorators import action
 from rest_framework import permissions
 from django_filters.rest_framework import DjangoFilterBackend
-from marketplace.models import Customer, House, HouseImage, Address
-from marketplace.serializers import CustomerSerializer, AddressSerializer, HouseImageSerializer, HouseSerializer
+from .models import Customer, House, HouseImage, Address, Review
+from .serializers import CustomerSerializer, AddressSerializer, HouseImageSerializer, HouseSerializer, ReviewSerializer
 from .filters import HouseFilter
 # Create your views here.
 
@@ -29,7 +29,9 @@ class HouseViewSet(ModelViewSet):
         return House.objects.prefetch_related('images').filter(customer_id=Customer.objects.only('id').get(user_id=user.id))
 
     def get_serializer_context(self):
-        return {'house_id': self.kwargs.get('pk'), 'customer_id': Customer.objects.only('id').filter(user_id=self.request.user.id)}
+        if self.request.user and self.request.user.is_authenticated:
+            return {'house_id': self.kwargs.get('pk'), 'customer_id': Customer.objects.only('id').get(user_id=self.request.user.id).id}
+        return {'house_id': self.kwargs.get('pk')}
 
 
 class HouseImageViewSet(ModelViewSet):
@@ -63,3 +65,15 @@ class CustomerViewSet(ModelViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data)
+
+
+class ReviewViewSet(ModelViewSet):
+    serializer_class = ReviewSerializer
+
+    def get_queryset(self):
+        return Review.objects.select_related('customer').filter(house_id=self.kwargs['house_pk'])
+
+    def get_serializer_context(self):
+        if self.request.user and self.request.user.is_authenticated:
+            return {'house_id': self.kwargs['house_pk'], 'customer_id': Customer.objects.only('id').get(user_id=self.request.user.id).id}
+        return {'house_id': self.kwargs['house_pk']}

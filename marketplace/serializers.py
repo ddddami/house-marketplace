@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from core.models import User
-from .models import Customer, House, HouseImage, Address
+from .models import Customer, House, HouseImage, Address, Review
 
 
 class AddressSerializer(serializers.ModelSerializer):
@@ -51,9 +51,6 @@ class HouseSerializer(serializers.ModelSerializer):
         house.address = address
         house.save()
         address.save()
-        # address = Address(**(validated_data[7:]))
-        # address.save()
-        # return house
         return house
 
     def update(self, instance, validated_data):
@@ -86,3 +83,18 @@ class CustomerSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user_id = self.context['user_id']
         return Customer.objects.create(user_id=user_id, **validated_data)
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    customer = CustomerSerializer(read_only=True)
+
+    class Meta:
+        model = Review
+        fields = ['id', 'name', 'description', 'date', 'customer']
+
+    def create(self, validated_data):
+        review = Review(**validated_data)
+        review.house_id = self.context['house_id']
+        review.customer_id = self.context['customer_id']
+        review.save()
+        return review
