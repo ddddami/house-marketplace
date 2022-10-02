@@ -25,8 +25,8 @@ class HouseViewSet(ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if self.request.method in permissions.SAFE_METHODS or user.is_staff:
-            return House.objects.prefetch_related('images').all()
-        return House.objects.prefetch_related('images').filter(customer_id=Customer.objects.only('id').get(user_id=user.id))
+            return House.objects.prefetch_related('images').select_related('address').select_related('customer__user').all()
+        return House.objects.prefetch_related('images').select_related('address').select_related('customer').filter(customer_id=Customer.objects.only('id').get(user_id=user.id))
 
     def get_serializer_context(self):
         if self.request.user and self.request.user.is_authenticated:
