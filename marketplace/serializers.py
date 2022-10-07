@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from core.models import User
-from .models import Cart, Customer, House, HouseImage, Address, Review
+from .models import Cart, CartItem, Customer, House, HouseImage, Address, Review
 
 
 class AddressSerializer(serializers.ModelSerializer):
@@ -106,3 +106,30 @@ class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = ['id']
+
+
+class CartItemSerializer(serializers.ModelSerializer):
+    house = HouseSerializer(read_only=True)
+
+    class Meta:
+        model = CartItem
+        fields = ['id', 'house']
+
+
+class AddCartItemSerializer(serializers.ModelSerializer):
+    house_id = serializers.IntegerField()
+
+    class Meta:
+        model = CartItem
+        fields = ['id', 'house_id']
+
+    def validate(self, attrs):
+        if CartItem.objects.filter(cart_id=self.context['cart_id'], house_id=attrs['house_id']).exists():
+            raise serializers.ValidationError(
+                'House with given ID is already in the cart.')
+        return attrs
+
+    def save(self, **kwargs):
+        self.instance = CartItem.objects.create(
+            cart_id=self.context['cart_id'], **self.validated_data)
+        return self.instance

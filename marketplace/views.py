@@ -1,14 +1,14 @@
 from django.shortcuts import render
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
-from rest_framework.mixins import CreateModelMixin, DestroyModelMixin, RetrieveModelMixin
+from rest_framework.mixins import CreateModelMixin, DestroyModelMixin, RetrieveModelMixin, ListModelMixin
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.decorators import action
 from rest_framework import permissions
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Cart, Customer, House, HouseImage, Address, Review
-from .serializers import CartSerializer, CustomerSerializer, AddressSerializer, HouseImageSerializer, HouseSerializer, ReviewSerializer
+from .models import Cart, CartItem, Customer, House, HouseImage, Address, Review
+from .serializers import AddCartItemSerializer, CartSerializer, CustomerSerializer, AddressSerializer, HouseImageSerializer, HouseSerializer, ReviewSerializer, CartItemSerializer
 from .filters import HouseFilter
 # Create your views here.
 
@@ -84,3 +84,20 @@ class ReviewViewSet(ModelViewSet):
 class CartViewSet(CreateModelMixin, RetrieveModelMixin, DestroyModelMixin, GenericViewSet):
     queryset = Cart.objects.all()
     serializer_class = CartSerializer
+
+
+class CartItemViewSet(CreateModelMixin,
+                      ListModelMixin,
+                      RetrieveModelMixin,
+                      DestroyModelMixin,
+                      GenericViewSet):
+    def get_queryset(self):
+        return CartItem.objects.select_related('house').filter(cart_id=self.kwargs['cart_pk'])
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return AddCartItemSerializer
+        return CartItemSerializer
+
+    def get_serializer_context(self):
+        return {'cart_id': self.kwargs['cart_pk']}

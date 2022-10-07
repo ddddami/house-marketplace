@@ -67,3 +67,11 @@ class Review(models.Model):
 class Cart(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, unique=True)
     date_created = models.DateField(auto_now_add=True)
+
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    house = models.ForeignKey(House, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = [['cart', 'house']]

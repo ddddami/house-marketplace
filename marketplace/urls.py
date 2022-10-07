@@ -12,4 +12,8 @@ houses_router.register('images', views.HouseImageViewSet,
                        basename='house-images')
 houses_router.register('reviews', views.ReviewViewSet,
                        basename='house-reviews')
-urlpatterns = router.urls + houses_router.urls
+carts_router = routers.NestedDefaultRouter(
+    router, 'carts', lookup='cart')
+carts_router.register('items', views.CartItemViewSet,
+                      basename='cart-items')
+urlpatterns = router.urls + houses_router.urls + carts_router.urls
