@@ -6,6 +6,7 @@ router = routers.DefaultRouter()
 router.register('houses', views.HouseViewSet, basename='house')
 router.register('customers', views.CustomerViewSet)
 router.register('carts', views.CartViewSet)
+router.register('orders', views.OrderViewSet, basename='order')
 houses_router = routers.NestedDefaultRouter(
     router, 'houses', lookup='house')
 houses_router.register('images', views.HouseImageViewSet,

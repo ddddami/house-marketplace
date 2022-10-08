@@ -7,8 +7,8 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.decorators import action
 from rest_framework import permissions
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Cart, CartItem, Customer, House, HouseImage, Address, Review
-from .serializers import AddCartItemSerializer, CartSerializer, CustomerSerializer, AddressSerializer, HouseImageSerializer, HouseSerializer, ReviewSerializer, CartItemSerializer
+from .models import Cart, CartItem, Customer, House, HouseImage, Address, Order, Review
+from .serializers import AddCartItemSerializer, CartSerializer, CreateOrderSerializer, CustomerSerializer, AddressSerializer, HouseImageSerializer, HouseSerializer, OrderSerializer, ReviewSerializer, CartItemSerializer, UpdateOrderSerializer
 from .filters import HouseFilter
 # Create your views here.
 
@@ -101,3 +101,27 @@ class CartItemViewSet(CreateModelMixin,
 
     def get_serializer_context(self):
         return {'cart_id': self.kwargs['cart_pk']}
+
+
+class OrderViewSet(ModelViewSet):
+    http_method_names = ['get', 'post', 'patch', 'delete', 'head', 'options']
+
+    def get_queryset(self):
+        user = self.request.user
+
+        if user.is_staff:
+            return Order.objects.all()
+
+        customer_id = Customer.objects.only(
+            'id').get(user_id=user.id)
+        return Order.objects.filter(customer_id=customer_id)
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return CreateOrderSerializer
+        if self.request.method == 'PATCH':
+            return UpdateOrderSerializer
+        return OrderSerializer
+
+    def get_serializer_context(self):
+        return {'user_id': self.request.user.id}
