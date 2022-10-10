@@ -125,3 +125,8 @@ class OrderViewSet(ModelViewSet):
 
     def get_serializer_context(self):
         return {'user_id': self.request.user.id}
+
+    def get_permissions(self):
+        if self.request.method in ['PATCH', 'DELETE']:
+            return [IsAdminUser()]
+        return [IsAuthenticated()]

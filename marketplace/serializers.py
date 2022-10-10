@@ -101,20 +101,25 @@ class ReviewSerializer(serializers.ModelSerializer):
         return review
 
 
-class CartSerializer(serializers.ModelSerializer):
-    id = serializers.UUIDField(read_only=True)
-
-    class Meta:
-        model = Cart
-        fields = ['id']
-
-
 class CartItemSerializer(serializers.ModelSerializer):
     house = HouseSerializer(read_only=True)
 
     class Meta:
         model = CartItem
         fields = ['id', 'house']
+
+
+class CartSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(read_only=True)
+    total_price = serializers.SerializerMethodField(source='get_total_price')
+    items = CartItemSerializer(read_only=True, many=True)
+
+    def get_total_price(self, cart):
+        return sum([item.house.price for item in cart.items.all()])
+
+    class Meta:
+        model = Cart
+        fields = ['id', 'total_price', 'items']
 
 
 class AddCartItemSerializer(serializers.ModelSerializer):
@@ -128,9 +133,13 @@ class AddCartItemSerializer(serializers.ModelSerializer):
         if CartItem.objects.filter(cart_id=self.context['cart_id'], house_id=attrs['house_id']).exists():
             raise serializers.ValidationError(
                 'House with given ID is already in the cart.')
+            if OrderItem.objects.filter(house_id=attrs['house_id']).exists():
+                raise serializers.ValidationError(
+                    'This house has been already bought.')
         return attrs
 
     def save(self, **kwargs):
+        cart_id = self.context['cart_id']
         self.instance = CartItem.objects.create(
             cart_id=self.context['cart_id'], **self.validated_data)
         return self.instance
@@ -174,8 +183,9 @@ class CreateOrderSerializer(serializers.Serializer):
                                      unit_price=item.house.price) for item in cart_items]
             OrderItem.objects.bulk_create(order_items)
             Cart.objects.filter(pk=cart_id).delete()
+            self.instance = order
 
-            return order
+            return self.instance
 
 
 class UpdateOrderSerializer(serializers.ModelSerializer):

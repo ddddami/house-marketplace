@@ -70,7 +70,8 @@ class Cart(models.Model):
 
 
 class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    cart = models.ForeignKey(
+        Cart, on_delete=models.CASCADE, related_name='items')
     house = models.ForeignKey(House, on_delete=models.CASCADE)
 
     class Meta:
