@@ -22,6 +22,7 @@ admin.site.site_header = 'House marketplace Admin'
 admin.site.index_title = 'Admin'
 
 urlpatterns = [
+    path('', include('core.urls')),
     path('admin/', admin.site.urls),
     path('__debug__/', include('debug_toolbar.urls')),
     path('auth/', include('djoser.urls')),
